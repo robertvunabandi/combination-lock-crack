@@ -32,7 +32,7 @@ def print_most_probable(clc: CombinationLockCracker, count: int, adjacency=False
 		mps = clc.most_probables(count)
 	max_d_string = ("| with max_distance = %d" % max_distance) if adjacency else ""
 	print(clc, 'for count =', count, '| adjacency =', adjacency, max_d_string)
-	print("\n".join(sorted(["%s: %s" % (str(el), str(round(mps[el], 6))) for el in mps])))
+	print("\n".join(sorted(["%s: %s" % (str(el), str(round(mps[el], 8))) for el in mps])))
 
 
 if __name__ == '__main__':
