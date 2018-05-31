@@ -1,5 +1,5 @@
-from distribution import Distribution
 from typing import Callable, Iterable
+from distribution import Distribution
 from models import Models
 
 

@@ -1,5 +1,5 @@
-from heap_pq import MaxHeapPriorityQueue
 from typing import Callable
+from heap_pq import MaxHeapPriorityQueue
 
 class Distribution(dict):
 	"""

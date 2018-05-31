@@ -1,7 +1,7 @@
 import math
 
 
-def nCr(n, r):
+def nCr(n: int, r: int) -> float:
 	"""
 	n choose r, see here: https://en.wikipedia.org/wiki/Binomial_coefficient
 	"""
