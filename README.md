@@ -6,18 +6,18 @@ This project is an attempt at cracking combination lock combos.
 
 ## Hypothetical Scenario
 
-Let's say that a person, let's call this person **A**, has a bike and of course a bike-lock. His or her bike-lock is a 4-digit password system. More precisely, it's a system where numbers are placed in a rotating manner, like this image here:
+Let's say that a person, let's call this person **`A`**, has a bike and of course a bike-lock. His or her bike-lock is a 4-digit password system. More precisely, it's a system where numbers are placed in a rotating manner, like this image here:
 ![bike-lock](images/bike-lock.jpg)  
 > *image source: https://www.dormco.com/Combination_Cable_Bike_Lock_Master_Lock_Dorm_p/gh2-1-3-8114d.htm*
 
-Imagine another person, let's call this person **B**, wants to steal **A**'s bike. Now, **B** is intelligent, so he will try not to get caught. To do so, he will try to figure out **A**'s bike-lock combination. More precisely, **B** will stalk **A**, and every time locks his or her bike the the bike-lock, **B** will do the follwoing threw actions:
+Imagine another person, let's call this person **`B`**, wants to steal **`A`**'s bike. Now, **`B`** is intelligent, so he will try not to get caught. To do so, he will try to figure out **`A`**'s bike-lock combination. More precisely, **`B`** will stalk **`A`**, and every time locks his or her bike the the bike-lock, **`B`** will do the follwoing threw actions:
 
 - Observe what combo is left on the lock
 - Attempt to unlock the bike-lock without changing the combo
-	- If it unlocks, **B** takes the bike
-	- If it doesn't, **B** records the combo that he has seen (in this case, **A**, as one can expect, would have shuffled the combo)
+	- If it unlocks, **`B`** takes the bike
+	- If it doesn't, **`B`** records the combo that he has seen (in this case, **`A`**, as one can expect, would have shuffled the combo)
 
-Eventually, **B** will have a long list of `n` different lock combos (`n` being an integer), with which **B** hopes to analyze in order to figure out the true combo that will unlock the bike. 
+Eventually, **`B`** will have a long list of `n` different lock combos (`n` being an integer), with which **`B`** hopes to analyze in order to figure out the true combo that will unlock the bike. 
 
 NOTE: You can read the [article I wrote about this {{TODO:LINK_TO_MEDIUM_ARTICLE_WHEN_PUBLISHED}}](Link_here) on medium.
 
@@ -25,16 +25,16 @@ NOTE: You can read the [article I wrote about this {{TODO:LINK_TO_MEDIUM_ARTICLE
 
 Before you jump to the conclusion that this is hopeless, let me attempt to reason you out otherwise. We observe the following.
 
-If **A** desires not lose his or her bike, **A** will *always* shuffle the combo. Let's assume that is true. Then, there are only two safe ways to shuffle the bike-lock combo (in order of highest safety to lowest):
+If **`A`** desires not lose his or her bike, **`A`** will *always* shuffle the combo. Let's assume that is true. Then, there are only two safe ways to shuffle the bike-lock combo (in order of highest safety to lowest):
 
 1. Shuffling the combo to the same exact number every single time
 2. Shuffling the combo randomly using a random number generator
 
-Assuming **A** uses neither of these shuffling methods, **A**'s shuffling *will not be random*, and that is key to this entire project. Whenever data is not random, there exists an algorithm that can exploit it to extract useful information out of it, and that is likely the most important aspect of this entire project.
+Assuming **`A`** uses neither of these shuffling methods, **`A`**'s shuffling *will not be random*, and that is key to this entire project. Whenever data is not random, there exists an algorithm that can exploit it to extract useful information out of it, and that is likely the most important aspect of this entire project.
 
 **Why is (1) the safest solution?** If we are using data analysis algorithms to figure out the code, the more data we have, the better. However, (1) doesn't help because observing the same information twice in a row does not add any new informations! Although we'd be use that the combo that we always see is not the correct one, that rules out 1 out of too many possibilities. Most locks have 4 to 5 digits, so it's one out of 10000 to 100000 combinations (assuming the combinations only have numbers).
 
-**Why is (2) also safe, although not as safe as (1)?** Using a truly random number prevents any data analysis algorithm to find a pattern or structure to the data. However, the problem with this is that given enough time, **B** will be able to rule out enough combinations to reduce the set of possible true codes to a small subset of the entire sample space. However, this is still safe because it's simply not practice to wait this long for a bike or anything else. Assuming 4 digits, there are 10000 possible codes. Assuming **B** is able to get at most 5 shuffled combos per day, it will still take **B** at least about 5.5 years to rule out every single code and likely more due to the fact that **B** will start rereading the same combo multiple times. 
+**Why is (2) also safe, although not as safe as (1)?** Using a truly random number prevents any data analysis algorithm to find a pattern or structure to the data. However, the problem with this is that given enough time, **`B`** will be able to rule out enough combinations to reduce the set of possible true codes to a small subset of the entire sample space. However, this is still safe because it's simply not practice to wait this long for a bike or anything else. Assuming 4 digits, there are 10000 possible codes. Assuming **`B`** is able to get at most 5 shuffled combos per day, it will still take **`B`** at least about 5.5 years to rule out every single code and likely more due to the fact that **`B`** will start rereading the same combo multiple times. 
 
 So, with that in mind, we are ready to tackle this challenge.
 
@@ -42,7 +42,7 @@ So, with that in mind, we are ready to tackle this challenge.
 
 At this point, let's think of the true combo as `X`, and let's think of the shuffled combo observations as `y_i` for `i` in the set `{1, 2,...,n}` (i.e., we've made `n` observations). Our goal is to use the `y_i`'s in order to get closer to `X`. 
 
-The model we will use is the [naive Bayes classifier (NBC)](https://en.wikipedia.org/wiki/Naive_Bayes_classifier). Modeling this problem as an NBC makes sense. NBC require that there is one latent/hidden variable, which is `X` in our case. Additionally, NBC's require that the observations made are each independent of each other, which also makes sense in this case. Every time **A** needs to unlock the lock, **A** enters the true code. Then, when they lock it again, they reshuffle. It doesn't make much sense for **A** to pick the new shuffled code based on what the previous shuffled code. However, note that we can't assume that every human being will act the way we expect them to act, so there is a non-zero chance that someone does shuffle their code based on the previous shuffled code. Nevertheless, we will assume that this does not happen by assuming that the observations are independent of each other.
+The model we will use is the [naive Bayes classifier (NBC)](https://en.wikipedia.org/wiki/Naive_Bayes_classifier). Modeling this problem as an NBC makes sense. NBC require that there is one latent/hidden variable, which is `X` in our case. Additionally, NBC's require that the observations made are each independent of each other, which also makes sense in this case. Every time **`A`** needs to unlock the lock, **`A`** enters the true code. Then, when they lock it again, they reshuffle. It doesn't make much sense for **`A`** to pick the new shuffled code based on what the previous shuffled code. However, note that we can't assume that every human being will act the way we expect them to act, so there is a non-zero chance that someone does shuffle their code based on the previous shuffled code. Nevertheless, we will assume that this does not happen by assuming that the observations are independent of each other.
 
 So, we get the following image:
 ![Naive Bayes Classifier Representation](images/nbc.jpg)
@@ -69,7 +69,7 @@ Let's assume that we are at a point that for any `s` in the set `S`, the probabi
 
 In the above algorithm, we already know `P(X=s)`. This number is `p_s` that we were given. However, what do we do with `p(y_i|X=s)`? This is the probability of observing `y_i` given that `s` is the true code (i.e. given that `X = s`). 
 
-Intuitively, if `y_i` equals `s`, then it is extremely unlikely to observe `y_i` because in that case it'd be the true code. Thus, `p(y_i=s|X=s)` is an extremely small number. With the assumption that **A** above always shuffle, this quantity is `p(y_i=s|X=s) = 0`. To be clear, the only way we know that `y_i` is not the code is because we assume we are able to always check for ourselves before we do the recording. However, it is possible that we don't always have that opportunity. 
+Intuitively, if `y_i` equals `s`, then it is extremely unlikely to observe `y_i` because in that case it'd be the true code. Thus, `p(y_i=s|X=s)` is an extremely small number. With the assumption that **`A`** above always shuffle, this quantity is `p(y_i=s|X=s) = 0`. To be clear, the only way we know that `y_i` is not the code is because we assume we are able to always check for ourselves before we do the recording. However, it is possible that we don't always have that opportunity. 
 
 Another intuition is that if we see a shuffled combo, we should expect that number to be far away from the true code. For example, if the true code is `5555`. We should be more likely to see `1234` than `5554` because `5554` is so close to the true code. Psychologically speaking, the person who shuffles the code will always try to stay away as far as possible to the true code.
 
@@ -115,7 +115,7 @@ I personally feel like although this relativity could be non-random, it seems li
 
 Notice that by choosing to use a naive Bayes classifier (NBC), we have restricted the way we attack this problem. *That is not the only way to solve this problem*. 
 
-One other model that we could have done is using a [neural network (NN)](https://en.wikipedia.org/wiki/Artificial_neural_network). The way this would work is to put a hard a number to the number of data points that we have to collect. That is, for example, for each combination lock that person **B** is trying to crack, person **B** will need to collect `d` combo readings. The greater the value `d`, the better. Then, we can use the `d` numbers as input layer. Then, have multiple hidden layers, and finally, have a softmax output layer that outputs the probability of each number in the set `S`. I am not sure how well this would work, but one of the very problem with using an NN is that it requires a LOT of data to train. Usually, in the order of `10,000`. For our case, that'd be `10,000` times `d` total readings. If `d` was `20` for example, then that amounts to `200,000` total readings for about `10,000` (ideally) different combos of the *same* digit length. It's also problematic that they have to come from the *same* digit length because if we wanted to generalize to any length, then we need separate data for each length. That's a pain when we're not even guaranteed that it'd work well. 
+One other model that we could have done is using a [neural network (NN)](https://en.wikipedia.org/wiki/Artificial_neural_network). The way this would work is to put a hard a number to the number of data points that we have to collect. That is, for example, for each combination lock that person **`B`** is trying to crack, person **`B`** will need to collect `d` combo readings. The greater the value `d`, the better. Then, we can use the `d` numbers as input layer. Then, have multiple hidden layers, and finally, have a softmax output layer that outputs the probability of each number in the set `S`. I am not sure how well this would work, but one of the very problem with using an NN is that it requires a LOT of data to train. Usually, in the order of `10,000`. For our case, that'd be `10,000` times `d` total readings. If `d` was `20` for example, then that amounts to `200,000` total readings for about `10,000` (ideally) different combos of the *same* digit length. It's also problematic that they have to come from the *same* digit length because if we wanted to generalize to any length, then we need separate data for each length. That's a pain when we're not even guaranteed that it'd work well. 
 
 Another way would be not to assume that the observations were independent of each other. There is a very subtle thing that happens with this. When using an NBC, whenever we observe `y_i`, we update the distribution based on `y_i` and based on the distribution that we have updated so far. In a way, the distribution that we have so far somewhat contains *some* informations about all the previous `y`'s. However, it doesn't necessarily contains *all* information about them. In this sense, one could make a model such that whenever we update our belief, we update on the relationship between all the `y`'s that we have observed so far. I am not sure exactly how to approach the problem this way, but it is certainly possible. 
 
