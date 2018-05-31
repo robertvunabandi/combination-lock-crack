@@ -30,8 +30,8 @@ class Models:
 		return prob_observation_given_actual
 
 	@staticmethod
-	def create_distance_model(digit_count: int, distance_func: Callable = None,
-							  model_chosen_name: str = None, encourage_distance: bool = False) -> Callable:
+	def create_distance_model(digit_count: int, distance_func: Callable = None, model_name: str = None,
+							  enc_dist: bool = False) -> Callable:
 		"""
 		the distance model is a model such that the probability of observing
 		O given that A is the true value grows as O is more different than
@@ -51,16 +51,16 @@ class Models:
 		:param distance_func:
 			a function that takes in observation, actual, and digit_count
 			and outputs how far observation is from actual (or vice versa)
-		:param model_chosen_name:
+		:param model_name:
 			name of the model chosen when created or now
-		:param encourage_distance:
+		:param enc_dist:
 			this is a boolean that, if True, increases the probability of
 			further distances. The choice of how to increase the probability
 			linearly was made somewhat arbitrarily. See below.
 		"""
 		# try to load the model, if it fails, create it then save it
 		try:
-			distance_model_map = Models.load_model(model_chosen_name)
+			distance_model_map = Models.load_model(model_name)
 			assert distance_func is not None, 'we only store for non-null distance function'
 
 			def prob_observation_given_actual(obs: int, actual: int) -> float:
@@ -101,7 +101,7 @@ class Models:
 				# the encouraging distance was made such that it doesn't increase
 				# too fast until it starts reaching really high values (around 16)
 				if not distance in encouraging_distance:
-					if encourage_distance:
+					if enc_dist:
 						encouraging_distance[distance] = 0
 					else:
 						encouraging_distance[distance] = int(distance ** 1.7 + (2.1 ** distance / 1000))
@@ -116,7 +116,7 @@ class Models:
 			return prob_observation_given_actual_map[actual][distance]
 
 		# store the model
-		Models.store_model(prob_observation_given_actual_map, model_chosen_name)
+		Models.store_model(prob_observation_given_actual_map, model_name)
 		return prob_observation_given_actual
 
 	@staticmethod
