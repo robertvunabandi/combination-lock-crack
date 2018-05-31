@@ -45,7 +45,7 @@ At this point, let's think of the true combo as `X`, and let's think of the shuf
 The model we will use is the [naive Bayes classifier (NBC)](https://en.wikipedia.org/wiki/Naive_Bayes_classifier). Modeling this problem as an NBC makes sense. NBC require that there is one latent/hidden variable, which is `X` in our case. Additionally, NBC's require that the observations made are each independent of each other, which also makes sense in this case. Every time **`A`** needs to unlock the lock, **`A`** enters the true code. Then, when they lock it again, they reshuffle. It doesn't make much sense for **`A`** to pick the new shuffled code based on what the previous shuffled code. However, note that we can't assume that every human being will act the way we expect them to act, so there is a non-zero chance that someone does shuffle their code based on the previous shuffled code. Nevertheless, we will assume that this does not happen by assuming that the observations are independent of each other.
 
 So, we get the following image:
-![Naive Bayes Classifier Representation](images/nbc.jpg)
+![Naive Bayes Classifier Representation](images/nbc.JPG)
 > *image source: I took this photo.*
 
 Initially, we have no idea what `X` really is. So, it's in our best interest to guess that the probability that `X` is any number `s` in the set `S = {0000, 0001, ..., 9998, 9999}` is uniform over that set. (Note that we use lower case `s` for one of the number, and note that we use 4-digit numbers in the set. However, this can still be extended to having `d` digits where `d > 0` is an integer. For more clarity, we use `d = 4`). 
