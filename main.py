@@ -19,8 +19,7 @@ def create_edit_distance_clc(digit_count: int, encourage_distance: bool = False)
 	# the naming convention here describes how the edit distance
 	# function behaves. See Models.edit_distance for details
 	name = ('edit_cl1_ch1_%ddigits_' % digit_count) + ('encdist' if encourage_distance else 'noencdist')
-	d_model = Models.create_distance_model(digit_count, Models.edit_distance, model_name=name,
-										   enc_dist=encourage_distance)
+	d_model = Models.create_distance_model(digit_count, Models.edit_distance, model_name=name, enc_dist=encourage_distance)
 	return CombinationLockCracker(digit_count, d_model)
 
 
