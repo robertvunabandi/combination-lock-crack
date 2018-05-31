@@ -1,3 +1,4 @@
+from typing import Hashable, Callable
 # parent, left, and right are methods to navigate around the heap
 parent = lambda i: max((i - 1) // 2, 0)
 left = lambda i, n: min(2 * i + 1, n)
@@ -12,7 +13,7 @@ class MaxHeapPriorityQueue:
 	method.
 	"""
 
-	def __init__(self, count: int, key=lambda i: i, elements: list = None):
+	def __init__(self, count: int, key: Callable=lambda i: i, elements: list = None) -> None:
 		"""
 		initialize the max heap.
 		:param count: the needed number of elements to return when calling .sorted()
@@ -25,14 +26,14 @@ class MaxHeapPriorityQueue:
 			assert type(elements) == list, 'elements must be a list'
 			for el in elements: self.insert(el)
 
-	def insert(self, el):
+	def insert(self, el: Hashable) -> None:
 		"""
 		insert an element into this heap priority queue
 		"""
 		self.A.append(el)
 		self._heapify_up(len(self.A) - 1)
 
-	def extract_max(self):
+	def extract_max(self) -> Hashable:
 		"""
 		extract the maximum element from this heap priority queue
 		"""
@@ -43,7 +44,7 @@ class MaxHeapPriorityQueue:
 		self._heapify_down(0)
 		return maximum_element
 
-	def _heapify_up(self, i):
+	def _heapify_up(self, i: int) -> None:
 		"""
 		heapify the heap up from index i. Essentially move the elements
 		up the heap in order to maintain the heap property. see Wikipedia:
@@ -54,7 +55,7 @@ class MaxHeapPriorityQueue:
 			self.A[p], self.A[i] = self.A[i], self.A[p]
 			self._heapify_up(p)
 
-	def _heapify_down(self, i):
+	def _heapify_down(self, i: int) -> None:
 		"""
 		heapify the heap down from index i. Essentially move the elements
 		down the heap in order to maintain the heap property. see Wikipedia:
@@ -66,7 +67,7 @@ class MaxHeapPriorityQueue:
 			self.A[c], self.A[i] = self.A[i], self.A[c]
 			self._heapify_down(c)
 
-	def sorted(self):
+	def sorted(self) -> list:
 		"""
 		return @self.count largest elements in this heap. Note that this
 		method renders the heap obsolete. It removes all data from the heap.
