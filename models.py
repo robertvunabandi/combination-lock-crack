@@ -31,7 +31,7 @@ class Models:
 
 	@staticmethod
 	def create_distance_model(digit_count: int, distance_func: Callable = None, model_name: str = None,
-							  enc_dist: bool = False) -> Callable:
+							  enc_dist: bool = False, is_edit_distance: bool = False) -> Callable:
 		"""
 		the distance model is a model such that the probability of observing
 		O given that A is the true value grows as O is more different than
@@ -57,6 +57,11 @@ class Models:
 			this is a boolean that, if True, increases the probability of
 			further distances. The choice of how to increase the probability
 			linearly was made somewhat arbitrarily. See below.
+		:param is_edit_distance:
+			this is a boolean that, if True, means that we're using an edit
+			distance function. The reason this is important is because edit
+			distances are symmetrical, so we don't need a mapping for each
+			possible pairs of observation and actual.
 		"""
 		# try to load the model, if it fails, create it then save it
 		try:
@@ -70,14 +75,41 @@ class Models:
 		except Exception as e:
 			print('* failed to load model *')
 			pass
+
 		# if no distance function given, use the digit_distance function
 		sample_space_size = 10 ** digit_count
 		if distance_func is None:
 			distance_func = Models.digit_distance
+
+			# create the mapping to use for every time a digit needs to be replaced
 			mapping, multiplier = {}, 1
 			for i in range(digit_count + 1):
 				mapping[i] = utils.nCr(digit_count, i) * multiplier / sample_space_size
 				multiplier *= 9
+
+			def prob_observation_given_actual(obs: int, actual: int) -> float:
+				return mapping[distance_func(obs, actual, digit_count)]
+
+			# no need to store in this case because it's efficient enough
+			return prob_observation_given_actual
+
+		# if we're using an edit distance function, we can create the mapping
+		# more efficiently than every pairwise mapping of observation and actual
+		if is_edit_distance:
+			# create the mapping to use for every time a digit needs to be replaced
+			mapping: dict = {}
+			encouraging_distance:dict = {}
+			actual = 0
+			for observation in range(10 ** digit_count):
+				# the encouraging distance was made such that it doesn't increase
+				# too fast until it starts reaching really high values (around 16)
+				distance = distance_func(observation, actual, digit_count)
+				if not distance in encouraging_distance:
+					if enc_dist:
+						encouraging_distance[distance] = 0
+					else:
+						encouraging_distance[distance] = int(distance ** 1.7 + (2.1 ** distance / 1000))
+				mapping[distance] = mapping.get(distance, 0) + 1 + encouraging_distance[distance]
 
 			def prob_observation_given_actual(obs: int, actual: int) -> float:
 				return mapping[distance_func(obs, actual, digit_count)]
@@ -145,7 +177,11 @@ class Models:
 		returns the number of edits needed to modify observation in order to get to
 		actual.
 
-		using this as a distance function sounds promising.
+		Note:
+			since this uses a replace cost function that replaces each digit one
+			by one, the cost map is always the same for ever possible pair of
+			(observation, actual). I.e., replace cost of 1111 to 2222 should be
+			the same as replacing cost of 2222 to 3333.
 
 		:param replace_cost_func:
 			this is a method that takes two argument, (character_origin (co), character_new (cn)),
@@ -208,6 +244,24 @@ class Models:
 		return min(lower, higher)
 
 	@staticmethod
+	def replace_cost_by_rotations_up(co: str or int, cn: str or int):
+		"""
+		replace by rotating up.
+		Note:
+			the highest cost that we can do is 9 (if each rotation was
+			valued at 1, therefore, having the cost of down at at least
+			10 is enough to outweigh the other cost of going up
+		"""
+		return Models.replace_cost_by_rotations(co, cn, 11, 1)
+
+	@staticmethod
+	def replace_cost_by_rotations_down(co: str or int, cn: str or int):
+		"""
+		same Models.replace_cost_by_rotations_up except we are rotating down
+		"""
+		return Models.replace_cost_by_rotations(co, cn, 1, 11)
+
+	@staticmethod
 	def store_model(model: dict, name: str) -> None:
 		"""
 		store the model by name
@@ -222,3 +276,14 @@ class Models:
 		"""
 		print('model loading as %s' % ('models/%s.pickle' % name))
 		return pickle.load(open('models/%s.pickle' % name, 'rb'))
+
+
+# below, I was just doing some simple tests for edit distance
+if __name__ == '__main__':
+	mapping: dict = {}
+	true_code = 0
+	for j in range(10000):
+		ed = Models.edit_distance(j, true_code, 4, Models.replace_cost_by_rotations_down)
+		mapping[ed] = mapping.get(ed, 0) + 1
+	print("\n".join(["| %d | %d |" % i for i in zip(sorted(mapping.keys()), sorted(mapping.values()))]))
+	print(sum(mapping.values()))

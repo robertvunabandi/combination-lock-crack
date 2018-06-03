@@ -75,23 +75,182 @@ Another intuition is that if we see a shuffled combo, we should expect that numb
 
 Finally, one can easily see that from those two intuitions above, thinking about `p(y_i|X=s)` is far easier than thinking about `p(X=s|y_i)`. In fact, the attempt to solve this problem is for us to *define* how `p(y_i|X=s)` given every possible pairs of `y_i` and `s`, both of which come from the same sample space `S`. So, that is what we do in the following sections.
 
-## Defining the Observation Model
+## Defining the Observation Models
 
 It is evident that choice of observation model will dictates how close we get to the true combo. The **observation model** is simply a fancy term for the probability function `p(y_i|X=s)` (the probability of observing `y_i` given that the true code is `s` for every possible `y_i` and `s` both in the set `S`). They call it observation model because it is a model that dictates how we update our belief after having observed an observation.
 
-So, let's dive into some of the observation models we attempted to solve this problem.
+One thing to mention about the observation models is that they all imply that we cannot actually go into the combination lock and check whether the code we have seen is the true code. The reason they don't make that assumption is because the numbers simply work in a cleaner way. At the same time, they do not hinder the fact that seeing a given combo should tremendeously reduce the probability that that code is the true code. So, let's dive into some of the observation models we attempted to solve this problem.
 
 ### Black And White Model (BWM)
 
-TODO.
+This model is the simplest. It says that `p(y_i|X=s) = 1/n` if `y_i = s` and `p(y_i|X=s) = 1 - 1/n` if `y_i != s`, where `n` is the number of elements in the sample space. If we are dealing with a 4 digits combination lock, then `n = 10000`. So, the intuition behind this model is that it says that the probability that we observe a given combo `y_i`should be extremely small if the combo we observe is the true code. In addition, this model implies that the probability that we observe a combo `y_i` that is not the true code should be extremely high! In essence, we should expect not to see the true code, and this model models that really well.
 
-### Difference Distance Model (DDM)
+#### Advantages of BWM
 
-TODO.
+This model effectively rules out the combo that we have observed, which we expect to be wrong.
+
+#### Disadvantages of BWM
+
+This model has one main disadvantage. It's extremely naive. The reason it is naive is that it behaves the same way for every other combo that is not the not the combo we observed. For example, if we observe `3333`, this model will reduce the probability of `3333` by some high percentage, and then it will increase the probability of every other numbers by the same exact and small percentage. So, all it ends up doing is rule out the number we observe. 
+
+#### Conclusion
+
+This model should definitely not be used, but it's a good starting point. This model clearly shows that we need to be more creative than that.
+
+### Digit Distance Model (DDM)
+
+This model is a bit more complex than the BWM. The intuition behind this model is that whenever a human person shuffles their code, the human likely want the code to be as far as possible from their true code. This model is an attempt at defining "far away". Personally, when I shuffle my bike lock (before knowing this of course), I would always feel anxious if I see 1-2 of the original digits on the shuffled combo. So, I'd shuffle further.
+
+Thus in this model, `p(y_i|X=s)` depends on how many digits are differing from the true code. In the simple four digits combination lock case where `n = 10000` (`n` is the total number of possible digits):
+
+- `p(y_i|X=s) = 1/n` if there is `0` digit differing.
+- `p(y_i|X=s) = 36/n` if there is `1` digit differing.
+- `p(y_i|X=s) = 486/n` if there is `2` digit differing.
+- `p(y_i|X=s) = 2916/n` if there is `3` digits differing.
+- `p(y_i|X=s) = 6561/n` if there is `4` digits differing.
+
+In order to get the numbers in the nominator, we made use of the following formula: `nCr(4, i) * 9^i` for each `i in {0,1,2,3,4}`. `i` is the number of digits differing, so first, in the set of `4` digits, we choose `i` of them to be different, thus `nCr(4,i)`. Then, for those differing digits, we have `9^i` possibilities. For example, the 36 possibilities for `0000` are `j000`, `0j00`, `00j0`, and `000j` where `j` is each of `{1,2,3,4,5,6,7,8,9}`. 
+
+In general, if we had `d` digits, `p(y_i|X=s) = nCr(d, j) * 9^j/n` where `j` is the number of digits different in `y_i` and `s` and `j` is in the set `{0, 1, ..., d}`. Note that the digit difference is done by index. So, for each index, we check wether the two digits are are the same or differing.
+
+#### Advantages of DDM
+
+This model is the very first model that works quite well given enough data. I gave myself the goal of trying to solve this by just collecting `20` different readings, and this model was able, in one of the cases, to have my true combo within the top 100 digits. 
+
+#### Disadvantages of DDM
+
+The main disadvantage of this model is that whenever there are less than `d` digit different, this model will heavily penalize all the digits that are the same in the original combo. For example, if the true code is `0000` and we observed `0414`, most numbers that include `0` as a first digit will have their probability reduced, and this is bad. Simply looking at the numbers for `4` digits, you can see that the probability for `3` digit differing is `0.2916`, which is lower than `0.5`. So, all those combos' probabilities will be lowered. 
+
+The reason the above argument is really bad is because it works really bad for whenever there is only `1` digit that stays the same (we're focusing on a `4` digit combo here). In general, we should not expect to see `2` digits the same as in the original code. However, seeing one digit as the same is not uncommon. I feel like there should be a higher chance to see `3` digits difference. Maybe somewhere around `0.35` or `0.40`, but that's just intuition. 
+
+Finally, the `1` digit that is the same problem is harder to pronounce if the number of digits increases. For example, if we had `10` digit codes, then maybe it'd be `2` digit that is also bad. 
+
+#### Conclusion
+
+The disadvantage above is not too bad. This model can be used. However, it may require a lot more data. In addition, a problem with this model is that although more data is good, sometimes bad data can be disadvantageous (such as those numbers with only `3` digits differing in a `4` digit lock case). 
 
 ### Edit Distance Model (EDM)
 
-TODO.
+This model is a bit more complex than the DDM. It has the same intuition as DDM, except that instead of thinking of what digits are different, we are thinking of the distance as the [edit distance](https://en.wikipedia.org/wiki/Edit_distance) from observation to true code (which should be the same if we went the other way). The edit distance of two strings is how the minimum distance needed to change one string into the other by performing one of three edits---inserts, replacements, and deletes---where each edit incurs a distance (or cost). 
+
+For the EDM, the only types of edit that we're allowed to make in terms of edit distance are replacing edits. I.e., in terms of edit distance, we pick the minimum edit such that the replacing cost is given for different replacements (we'll talk about these next), the delete cost is `infinite`, and the inserting cost is also `infinite` (setting the cost to `infinite` is the mathematical way of saying that using that type of edits is extremely bad).
+
+Now, in terms of replacement cost, the cost of changing a digit `d_original` into another digit `d_destination` is the minimum number of rotations needed to go from `d_original` to `d_destination` in the digit wheel in most combination locks. Since the locks are organized in a wheel compartmentalized into 10 digits (`0` through `9`), we can always rotate up or down to go from one digit to another. In the EDM model, we make the assumption that we rotate in them most minimal way. For example, to rotate from `1` to `4`, rotating up costs `3` (switching to `2` then `3` then `4`), whereas rotating down costs `8`. So, the cost in this model will be `3`.
+
+Now, `p(y_i|X=s) = map[cost] / n` where `cost` is the edit distance from `y_i` to `s`, `n` then number of possible digits, and `map` is a [hash-table](https://en.wikipedia.org/wiki/Hash_table) mapping the `cost` to the number of numbers that differ by that cost. For example, in the `4` digit case, our hash-table is:
+
+|difference|numbers with difference|
+|:---:|:---:|
+|0 | 1 |
+|1 | 8 |
+|2 | 32 |
+|3 | 88 |
+|4 | 192 |
+|5 | 356 |
+|6 | 576 |
+|7 | 824 |
+|8 | 1056 |
+|9 | 1224 |
+|10 | 1286 |
+|11 | 1224 |
+|12 | 1056 |
+|13 | 824 |
+|14 | 576 |
+|15 | 356 |
+|16 | 192 |
+|17 | 88 |
+|18 | 32 |
+|19 | 8 |
+|20 | 1 |
+
+This hash-table is symmetric around 10, as can be seen. In addition, the values in this hash-table sum up to 10000.
+
+#### Advantages of EDM
+
+This model further models the concept of rotating digits up and down. So, it may be able to better model how humans shuffle digits.
+
+#### Disadvantages of EDM
+
+Although it models the real life shuffling, this model assumes human efficiency of picking the best fastest way to shuffle. So, this ends up causing problematic results. 
+
+In addition, this model assumes that humans are shuffling digits one by one. However, that is often not the case. Usually, they shuffle 2-3 digits at once. 
+
+#### Conclusion
+
+This model also works well. In contrast to DDM, this model doesn't really penalize having one digit difference as long as the number of edits is matched. However, when testing this model, the actual results were a bit more sporadic. So, it can be used, but it's harder to measure how "connected" are the end results of most probable digits after having done multiple observations. 
+
+### Edit Distance Model with Encouraged Distance (EDMwED)
+
+This model is the same as the above, except it encourages having higher differences. Essentially, what we do is multiply each mapping by a certain function `f(cost)`, then the probability becomes the sum the mapping divided by the sum of every costs.
+
+Attributing advantages or disadvantages to this model is hard to tell. It's very at core experimental, so it's something to test out and see how it performs.
+
+See advantages. 
+
+#### Conclusion
+
+When measured, this turned out to have terrible results. I am not sure how to explain it yet, but it seems that the boosting of distances is not "natural" in the way humans usually shuffle combination locks.
+
+### Edit Distance Model with Rotations Up Only (EDMwRUO)
+
+This is the same as EDM, but we are only allowed to have upward rotations. The resulting mapping becomes the following:
+
+|difference|numbers with difference|
+|:---:|:---:|
+| 0 | 1 |
+| 1 | 1 |
+| 2 | 4 |
+| 3 | 4 |
+| 4 | 10 |
+| 5 | 10 |
+| 6 | 20 |
+| 7 | 20 |
+| 8 | 35 |
+| 9 | 35 |
+| 10 | 56 |
+| 11 | 56 |
+| 12 | 84 |
+| 13 | 84 |
+| 14 | 120 |
+| 15 | 120 |
+| 16 | 165 |
+| 17 | 165 |
+| 18 | 220 |
+| 19 | 220 |
+| 20 | 282 |
+| 21 | 282 |
+| 22 | 348 |
+| 23 | 348 |
+| 24 | 415 |
+| 25 | 415 |
+| 26 | 480 |
+| 27 | 480 |
+| 28 | 540 |
+| 29 | 540 |
+| 30 | 592 |
+| 31 | 592 |
+| 32 | 633 |
+| 33 | 633 |
+| 34 | 660 |
+| 35 | 660 |
+| 36 | 670 |
+
+
+#### Advantages of EDMwRUO
+
+This seems to further model the concept that humans usually shuffle in one direction.
+
+#### Disadvantages of EDMwRUO
+
+Even though humans usually shuffle in one direction, they often shuffle in one direction for a bit then shuffle in the other for more. In addition, they often change their shuffling patterns over time even though the underlying assumption to remain far away from their true code is maintained.
+
+#### Conclusion
+
+This model doesn't work as well as it could. When ran, many digits ended up being different from each other when they shouldn't. The same thing happened with the EDM model. The model sounds promising, but it doesn't work as well on my data. 
+
+### Edit Distance Model with Rotations Down Only (EDMwRDO)
+
+This is similar to EDMwRUO, except we rotate down. The mapping is the same, and the advantages and disadvantages are the same as well. The conclusion is also the same.
 
 ## Results
 
@@ -103,7 +262,17 @@ The observation models that we have describes are not the only possible ones. On
 
 ### Using the Resulting Probabilities to Derive A New Distribution by Adjacency
 
-TODO. This was actually done.
+This is a special additional model. This model can be applied to every other models. 
+
+Essentially, when the person is ready to see the top 100 possible codes after having made observations (or top `k` codes), one can set the adjacency to be `**true**`. Then, that will take every probability combos, change them by `i` edit distances as explained in the EDM model, and assign those resulting changes the probability `p/(i+1)` where `p` is the probability of the combo we're currently looking at.
+
+For example, if `p = 0.1` for `0000`, then this will add into the probabilities of `0000` the value `p/1`, into each of `0001`, `0009`, ..., `1000`, `9000` the value `p/2`, etc... until reaching a maximum edit value that will also be given in the parameters. Then, at the end, it will normalize all the resulting probabilities. 
+
+This model is an addition that works well only with some given models. For instance, this works really well with DDM because most often, DDM will remove result in numbers that are 1 digit off from the true code appearing in the top `k` probable. This allows to give off some probabilities from those `1` digits off into the `0` digit off. 
+
+For other models, it hasn't been widely tested. However, it doesn't seem to be promising for other models.
+
+Since this is an addition, it doesn't have to always be used. So, it's up to the user to decide whether to use it. I'd recommend using it just to quickly test how well it approaches a given code. 
 
 ### Using Digit Probabilities
 
