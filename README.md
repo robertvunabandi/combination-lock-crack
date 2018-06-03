@@ -337,7 +337,7 @@ For each data set, I ran each of the models and recorded whether my code appeare
 
 Every other EDM models work with results similar to EDM.
 
-## Critics on our Approach
+## Critics on These Approaches
 
 The observation models that we have describes are not the only possible ones. One could, if he or she wanted, come up with more complex models that solve this problem more efficiently. I spent a lot of time to come up with these, but I hope they give you some perspectives into other things that we can do. If you discover another solution that works well, please hit me up I'd like to know. Anyway, let's discuss the other possible ways of solving this problem.
 
