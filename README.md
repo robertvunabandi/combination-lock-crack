@@ -296,9 +296,14 @@ One other model that we could have done is using a [neural network (NN)](https:/
 
 Another way would be not to assume that the observations were independent of each other. There is a very subtle thing that happens with this. When using an NBC, whenever we observe `y_i`, we update the distribution based on `y_i` and based on the distribution that we have updated so far. In a way, the distribution that we have so far somewhat contains *some* informations about all the previous `y`'s. However, it doesn't necessarily contains *all* information about them. In this sense, one could make a model such that whenever we update our belief, we update on the relationship between all the `y`'s that we have observed so far. I am not sure exactly how to approach the problem this way, but it is certainly possible. 
 
+## Conclusions
 
+I hope reading through these models, analysis, and critics shows that doing this is not hopeless. With enough data, one can build even more complex models to crack combination locks. I also hope that this is a call for you, if you own a bike or use some form of combination locks, it's safer to have a key lock instead. If you already have a combination lock, you ca do one of two things to prevent someone from using probability to open your lock:
 
+- Randomly shuffle your digits. 
+- Always shuffle to the same code (my recommendation)
 
+Showing that using probabilistic models to crack combination lock is a call to either make locks safer. Using a key is best, but there is always the possibility of losing the key. Using a keypad is also better. However, I've read in the past that one could use a temperature to see which keys were pressed (I cannot find the article). Also, combination locks can increase the number of digits that are needed, and increase the inputs (by adding the alphabet for example). 
 
 
 
