@@ -51,6 +51,7 @@ if __name__ == '__main__':
 	data_set_type, data_index = 1,1
 	data_name = ["observed_%d.txt", "simulated_%d.txt", "random_%d.txt"]
 	""" using the data index, load the data with either simulated, observed, or random """
+	# printing a title
 	print("\n* " +(data_name[data_set_type - 1] % data_index) + " * \n")
 	if data_set_type == 1:
 		true_combo, digit_count, observations = LockCData.load_observed(data_index)
