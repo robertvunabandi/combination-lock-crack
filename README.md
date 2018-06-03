@@ -302,9 +302,9 @@ For each data set, I ran each of the models and recorded whether my code appeare
 
 | data set | Appears in top 100 with `max_distance = 2`| Appears in top 100 with `max_distance = 3` | number of 1 digit off in top 100 | 
 |:---:|:---:|:---:| :---:|
-| obs1 | no | no | 1, 2 |
-| obs2 | no | no | 0, 0|
-| sim1 | yes | yes | 5, 6 |
+| obs1 | no | no | 1,2 |
+| obs2 | no | no | 0,0|
+| sim1 | yes | yes | 5,6 |
 | sim2 | no | no |  2,1 |
 | rand1 | no | no | 0,0 |
 | rand2 | no | no | 0,0 |
