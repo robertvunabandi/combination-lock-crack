@@ -19,7 +19,7 @@ Imagine another person, let's call this person **`B`**, wants to steal **`A`**'s
 
 Eventually, **`B`** will have a long list of `n` different lock combos (`n` being an integer), with which **`B`** hopes to analyze in order to figure out the true combo that will unlock the bike. 
 
-NOTE: You can read the [article I wrote about this]({{TODO:LINK_TO_MEDIUM_ARTICLE_WHEN_PUBLISHED}}) on medium.
+NOTE: You can read the [article I wrote about this](https://medium.com/@rvunabandi/cracking-combination-locks-b7edfbb13e1e) on medium.
 
 ## Analysis
 
