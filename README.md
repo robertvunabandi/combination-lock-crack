@@ -345,7 +345,7 @@ The observation models that we have describes are not the only possible ones. On
 
 This is a special additional model. This model can be applied to every other models. 
 
-Essentially, when the person is ready to see the top 100 possible codes after having made observations (or top `k` codes), one can set the adjacency to be `**true**`. Then, that will take every probability combos, change them by `i` edit distances as explained in the EDM model, and assign those resulting changes the probability `p/(i+1)` where `p` is the probability of the combo we're currently looking at.
+Essentially, when the person is ready to see the top 100 possible codes after having made observations (or top `k` codes), one can set the adjacency to be `true`. Then, that will take every probability combos, change them by `i` edit distances as explained in the EDM model, and assign those resulting changes the probability `p/(i+1)` where `p` is the probability of the combo we're currently looking at.
 
 For example, if `p = 0.1` for `0000`, then this will add into the probabilities of `0000` the value `p/1`, into each of `0001`, `0009`, ..., `1000`, `9000` the value `p/2`, etc... until reaching a maximum edit value that will also be given in the parameters. Then, at the end, it will normalize all the resulting probabilities. 
 
