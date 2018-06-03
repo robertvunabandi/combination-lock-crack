@@ -48,17 +48,24 @@ def print_most_probable(clc: CombinationLockCracker, count: int, adjacency=False
 
 
 if __name__ == '__main__':
-	data_index = 2
+	data_set_type, data_index = 1,1
+	data_name = ["observed_%d.txt", "simulated_%d.txt", "random_%d.txt"]
 	""" using the data index, load the data with either simulated, observed, or random """
-	# true_combo, digit_count, observations = LockCData.load_observed(data_index)
-	true_combo, digit_count, observations = LockCData.load_simulated(data_index)
-	# true_combo, digit_count, observations = LockCData.load_random(data_index)
+	print("\n* " +(data_name[data_set_type - 1] % data_index) + " * \n")
+	if data_set_type == 1:
+		true_combo, digit_count, observations = LockCData.load_observed(data_index)
+	elif data_set_type == 2:
+		true_combo, digit_count, observations = LockCData.load_simulated(data_index)
+	elif data_set_type == 3:
+		true_combo, digit_count, observations = LockCData.load_random(data_index)
+	else:
+		raise Exception('invalid data type')
 
 	""" create a combination lock cracker with one of the models """
 	clc = create_black_and_white_clc(digit_count)
 	# clc = create_difference_distance_clc(digit_count)
-	# clc = create_edit_distance_clc(digit_count, encourage_distance=True)
 	# clc = create_edit_distance_clc(digit_count, encourage_distance=False)
+	# clc = create_edit_distance_clc(digit_count, encourage_distance=True)
 	# clc = create_edit_distance_one_direction_clc(digit_count, encourage_distance=False, up=True)
 	# clc = create_edit_distance_one_direction_clc(digit_count, encourage_distance=False, up=False)
 
@@ -67,4 +74,6 @@ if __name__ == '__main__':
 
 	""" finally, print the most probable codes after having made the observations """
 	print_most_probable(clc, 100, adjacency=False)
-	print_most_probable(clc, 100, adjacency=True, max_distance=2)
+	for k in range(2, 4):
+		print('max_distance = %d' % k)
+		print_most_probable(clc, 100, adjacency=True, max_distance=k)

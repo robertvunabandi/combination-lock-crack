@@ -254,7 +254,88 @@ This is similar to EDMwRUO, except we rotate down. The mapping is the same, and 
 
 ## Results
 
-To be added soon.
+I have a 4-digit bike-lock, and I did 3 things: 
+- recorded two sets of 20 combos of simulated readings. For each simulated reading, I would set my true combo, then shuffle the code, then record the reading. Let's call these data sets `sim1` and `sim2`
+- recorded two sets of 20 combos of observed readings. I would bike, and whenever I locked my bike, I would record whatever shuffled reading. Let's call these data sets `obs1` and `obs2`
+- generated two sets of 20 combos of random readings. I generated them using python. Let's call these data sets `rand1` and `rand2`.
+
+For each data set, I ran each of the models and recorded whether my code appeared in the top 100 digits.
+
+### BWM
+
+| data set | Appears in top 100 | number of 1 digit off in top 100 |
+|:---:|:---:|:---:|
+| obs1 | no | 0 |
+| obs2 | no | 0 |
+| sim1 | no | 0 |
+| sim2 | no | 0 |
+| rand1 | no | 0 |
+| rand2 | no | 0 |
+
+*The results in this case had all the same probabilities, so this is equivalent to a no*
+
+### BWM with Adjacency
+
+| data set | Appears in top 100 with `max_distance = 2`| Appears in top 100 with `max_distance = 3` | number of 1 digit off in top 100 |
+|:---:|:---:|:---:|:---:|
+| obs1 | no | no | 0,0 |
+| obs2 | no | no | 0,0 |
+| sim1 | no | no | 0,0 |
+| sim2 | no | no | 0,0 |
+| rand1 | no | no | 0,0 |
+| rand2 | no | no | 0,0 |
+
+*With comma separated, we have then umber of 1 digit off in top 100 with `max_distance = 2` then `max_distance = 3`*
+
+### DDM
+
+| data set | Appears in top 100 | number of 1 digit off in top 100 |
+|:---:|:---:|:---:|
+| obs1 | no | 1 |
+| obs2 | no | 0 |
+| sim1 | no | 3 |
+| sim2 | no | 1 |
+| rand1 | no | 0 |
+| rand2 | no | 0 |
+
+### DDM with Adjacency 
+
+| data set | Appears in top 100 with `max_distance = 2`| Appears in top 100 with `max_distance = 3` | number of 1 digit off in top 100 | 
+|:---:|:---:|:---:| :---:|
+| obs1 | no | no | 1, 2 |
+| obs2 | no | no | 0, 0|
+| sim1 | yes | yes | 5, 6 |
+| sim2 | no | no |  2,1 |
+| rand1 | no | no | 0,0 |
+| rand2 | no | no | 0,0 |
+
+*With comma separated, we have then umber of 1 digit off in top 100 with `max_distance = 2` then `max_distance = 3`*
+
+### EDM
+
+| data set | Appears in top 100 | number of 1 digit off in top 100 |
+|:---:|:---:|:---:|
+| obs1 | no | 0 |
+| obs2 | no | 3 |
+| sim1 | no | 3 |
+| sim2 | no | 0 |
+| rand1 | no | 0 |
+| rand2 | no | 0 |
+
+### EDM with Adjacency
+
+| data set | Appears in top 100 with `max_distance = 2`| Appears in top 100 with `max_distance = 3` | number of 1 digit off in top 100 with | 
+|:---:|:---:|:---:| :---:|
+| obs1 | no | no | 0,0 |
+| obs2 | no | no | 5,5 |
+| sim1 | no | no | 3,3 |
+| sim2 | no | no | 0,0 |
+| rand1 | no | no | 0,0 |
+| rand2 | no | no | 0,0 |
+
+*With comma separated, we have then umber of 1 digit off in top 100 with `max_distance = 2` then `max_distance = 3`*
+
+Every other EDM models work with results similar to EDM.
 
 ## Critics on our Approach
 
@@ -304,32 +385,3 @@ I hope reading through these models, analysis, and critics shows that doing this
 - Always shuffle to the same code (my recommendation)
 
 Showing that using probabilistic models to crack combination lock is a call to either make locks safer. Using a key is best, but there is always the possibility of losing the key. Using a keypad is also better. However, I've read in the past that one could use a temperature to see which keys were pressed (I cannot find the article). Also, combination locks can increase the number of digits that are needed, and increase the inputs (by adding the alphabet for example). 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
